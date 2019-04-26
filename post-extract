@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+
+APP="$1"; TMP_WORK_DIR="$2"; REV="$3"
+dokku_log_info2 "Testing monorepo presence..."
+[[ ! -f "$TMP_WORK_DIR/.monorepo.dokku" ]] && exit
+
+dokku_log_info2 "Monorepo detected"
+
+while IFS="=" read -u 10 -a line || [[ -n $line ]]; do
+  [[ "${line[0]}" == "#"* || "${line[1]}" == "" ]] && continue
+  [[ $APP != *"${line[0]}"* ]] && continue
+
+  dockerfile="${line[1]}"
+  dockerfile_path="$TMP_WORK_DIR/$dockerfile.Dockerfile"
+
+  [[ ! -f "$dockerfile_path" ]] &&\
+   dokku_log_info2 "Cannot initiailize without Dockerfile named $dockerfile Dockerfile in monorepo root" && continue 
+
+  dokku_log_info2 "Building Dockerfile from $dockerfile.Dockerfile"
+  cp -f "$dockerfile_path" "$TMP_WORK_DIR/Dockerfile"
+  exit
+
+done 10<"$TMP_WORK_DIR/.monorepo.dokku"
+
+dokku_log_info2 "The application $APP is not defined in .monorepo.dokku"
+exit

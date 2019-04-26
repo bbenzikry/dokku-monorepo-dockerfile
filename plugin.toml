@@ -1,0 +1,4 @@
+[plugin]
+description = "Define image definitions for monorepos with dokku"
+version = "1.0.0"
+[plugin.config]
