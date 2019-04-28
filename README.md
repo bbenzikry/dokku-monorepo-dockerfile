@@ -28,6 +28,15 @@ remote: build context to Docker daemon
 ...
 ```
 
+- In case there's no definition present for the application, Dokku will fallback to default configuration
+
+```sh
+=====> Docker monorepo detected
+=====> The application APP is not defined in .monorepo.dokku
+-----> Cleaning up...
+-----> Building APP from herokuish...
+```
+
 ### Managing different `.dockerignore` files
 
 Add a `DOCKER_NAME.dockerignore` file in your root
